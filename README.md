@@ -6,9 +6,18 @@ This program is used for AWS Rekognition service testing. First of all, user nee
 How to start:
 1. git clone
 2. Set the AWS keys by running aws configure
-3. Run npm install
-4. Run ./node_modules/.bin/webpack
-5. Run "node index"
+3. Run 
+```
+npm install
+```
+4. Run 
+```
+./node_modules/.bin/webpack
+```
+5. Run 
+```
+node index
+```
 6. Plug in the webcam
 7. Open http://localhost:3000/
 
