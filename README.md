@@ -1,7 +1,7 @@
 # ISeeYou
 ## AWS Rekognition experiment.
 ### General operation principle
-This program is used for AWS Rekognition service testing. First of all, user need to create the AWS Rekognition collection from the images, previously uploaded to the AWS S3 bucket. After this, user can can perform the comparison between images stored in the collection and any image he wants. 
+This program is used for AWS Rekognition service testing. First of all, user need to create the AWS Rekognition collection from the images, previously uploaded to the AWS S3 bucket. After this, user can perform the comparison between images stored in the collection and any image he wants. 
 
 How to start:
 1. git clone
