@@ -11,6 +11,6 @@
   "dependencies": {
     "aws-sdk": "^2.157.0",
     "opencv": "^6.0.0",
-    "pi-gpio": "0.0.8"
+    "rpi-gpio": "^0.9.1"
   }
 }

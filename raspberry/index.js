@@ -1,6 +1,8 @@
 var cv = require('opencv'),
     AWS = require('aws-sdk'),
-    gpio = require('pi-gpio'),
+    gpio = require('rpi-gpio'),
+
+
     camWidth,
     camHeight,
     camFps,
@@ -25,6 +27,7 @@ counter = 0;
 camera = new cv.VideoCapture(0);
 camera.setWidth(camWidth);
 camera.setHeight(camHeight);
+
 
 
 setInterval(function() {
@@ -78,12 +81,12 @@ setInterval(function() {
     }, camInterval);
 
 function openDoor(){
-
-    gpio.open(21, "output", function(err) {		// Open pin 16 for output
-        gpio.write(21, 1, function() {			// Set pin 16 high (1)
-            //gpio.close(21);						// Close pin 16
+    gpio.setup(21, gpio.DIR_OUT, function(err) {
+        if (err) throw err;
+        gpio.write(21, true, function(err) {
+            if (err) throw err;
+            console.log('Written to pin');
         });
-    });
-
+    })
 }
 
