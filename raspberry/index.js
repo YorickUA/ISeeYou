@@ -1,5 +1,6 @@
 var cv = require('opencv'),
     AWS = require('aws-sdk'),
+    gpio = require('pi-gpio'),
     camWidth,
     camHeight,
     camFps,
@@ -35,7 +36,7 @@ setInterval(function() {
             if (err) throw err;
                 for (var i = 0; i < faces.length; i++) {
                     counter++;
-                    console.log("got face ", counter)
+                    console.log("got face ", counter);
                     params = {
                         CollectionId: 'employees',
                         Image: {
@@ -64,9 +65,25 @@ setInterval(function() {
                                 return false
                             }
                         })
-                        .then(data => console.log(data))
+                        .then(data =>{
+                            console.log(data)
+                            if(data){
+                                openDoor();
+                            }
+                        })
                         .catch(err => console.log(err))
                 }
             });
         });
     }, camInterval);
+
+function openDoor(){
+
+    gpio.open(21, "output", function(err) {		// Open pin 16 for output
+        gpio.write(21, 1, function() {			// Set pin 16 high (1)
+            //gpio.close(21);						// Close pin 16
+        });
+    });
+
+}
+
