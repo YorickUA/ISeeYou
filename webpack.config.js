@@ -12,7 +12,6 @@ var config = {
                 filename: 'bundle.js',
             },
             devtool: 'source-map',
-            watch: true,
 
             devServer: {
                 inline: true,
