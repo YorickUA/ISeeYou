@@ -3,7 +3,8 @@ var cv = require('opencv'),
     gpio = require('rpi-gpio'),
     OUTPUT_PIN = 16,
     FACE_MATCH_THRESHOLD = 80,
-
+    OPEN_LOCK_DELAY = 10000,
+    openDoorTimer,
     camWidth,
     camHeight,
     camFps,
@@ -29,11 +30,9 @@ camera = new cv.VideoCapture(0);
 camera.setWidth(camWidth);
 camera.setHeight(camHeight);
 
-
-
 setInterval(function() {
     camera.read(function(err, im) {
-        console.log("scan")
+        console.log("scan");
         if (err) throw err;
         im.detectObject('./node_modules/opencv/data/haarcascade_frontalface_alt2.xml', {}, function(err, faces) {
             var params;
@@ -70,7 +69,7 @@ setInterval(function() {
                             }
                         })
                         .then(data =>{
-                            console.log(data)
+                            console.log(data);
                             if(data){
                                 openDoor();
                             }
@@ -82,16 +81,23 @@ setInterval(function() {
     }, camInterval);
 
 function openDoor(){
-    gpio.setup( OUTPUT_PIN, gpio.DIR_OUT, function(err) {
-        if (err) console.log(err);
-        gpio.write( OUTPUT_PIN, true, function(err) {
-            if (err) {
-                console.log(err)
-            } else {
-                console.log('Written to pin');
-                gpio.destroy();
-            }
-
-        });
+    gpio.setup(OUTPUT_PIN, gpio.DIR_OUT, function(err) {
+        if (err) {
+            console.log(err);
+        } else {
+            gpio.write(OUTPUT_PIN, true, function(err) {
+                if (err){
+                    console.log(err);
+                } else {
+                    console.log('Written to pin');
+                    if (openDoorTimer){
+                        clearTimeout(openDoorTimer);
+                        openDoorTimer = setTimeout(gpio.destroy, OPEN_LOCK_DELAY);
+                    } else {
+                        openDoorTimer = setTimeout(gpio.destroy, OPEN_LOCK_DELAY);
+                    }
+                }
+            });
+        }
     })
 }
