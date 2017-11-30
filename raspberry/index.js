@@ -4,13 +4,12 @@ var cv = require('opencv'),
     OUTPUT_PIN = 16,
     FACE_MATCH_THRESHOLD = 80,
     OPEN_LOCK_DELAY = 10000,
+    DEFAULT_LOOP_DELAY = 1000,
+    CAM_HEIGHT = 320,
+    CAM_WIDTH  = 240,
     openDoorTimer,
-    camWidth,
-    camHeight,
-    camFps,
-    camInterval,
     camera,
-    counter;
+    counter = 0;
 
 AWS.config.update({region:'eu-west-1'});
 AWS.config.setPromisesDependency(null);
@@ -18,17 +17,10 @@ AWS.config.setPromisesDependency(null);
 dynamodb = new AWS.DynamoDB();
 rekognition = new AWS.Rekognition();
 
-// camera properties
-camWidth = 320;
-camHeight = 240;
-camFps = 10;
-camInterval = 10000 / camFps;
-counter = 0;
-
 // initialize camera
 camera = new cv.VideoCapture(0);
-camera.setWidth(camWidth);
-camera.setHeight(camHeight);
+camera.setWidth(CAM_WIDTH);
+camera.setHeight(CAM_HEIGHT);
 
 setInterval(function() {
     camera.read(function(err, im) {
@@ -78,7 +70,7 @@ setInterval(function() {
                 }
             });
         });
-    }, camInterval);
+    }, DEFAULT_LOOP_DELAY);
 
 function openDoor(){
     gpio.setup(OUTPUT_PIN, gpio.DIR_OUT, function(err) {
