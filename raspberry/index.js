@@ -1,7 +1,8 @@
 var cv = require('opencv'),
     AWS = require('aws-sdk'),
     gpio = require('rpi-gpio'),
-
+    OUTPUT_PIN = 16,
+    FACE_MATCH_THRESHOLD = 80,
 
     camWidth,
     camHeight,
@@ -45,7 +46,7 @@ setInterval(function() {
                         Image: {
                             Bytes: im.toBuffer()
                         },
-                        FaceMatchThreshold: 70,
+                        FaceMatchThreshold: FACE_MATCH_THRESHOLD,
                         MaxFaces: 1
                     };
                     face = faces[i];
@@ -81,12 +82,16 @@ setInterval(function() {
     }, camInterval);
 
 function openDoor(){
-    gpio.setup(21, gpio.DIR_OUT, function(err) {
-        if (err) throw err;
-        gpio.write(21, true, function(err) {
-            if (err) throw err;
-            console.log('Written to pin');
+    gpio.setup( OUTPUT_PIN, gpio.DIR_OUT, function(err) {
+        if (err) console.log(err);
+        gpio.write( OUTPUT_PIN, true, function(err) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('Written to pin');
+                gpio.destroy();
+            }
+
         });
     })
 }
-
