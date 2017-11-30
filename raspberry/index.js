@@ -92,9 +92,9 @@ function openDoor(){
                     console.log('Written to pin');
                     if (openDoorTimer){
                         clearTimeout(openDoorTimer);
-                        openDoorTimer = setTimeout(gpio.destroy, OPEN_LOCK_DELAY);
+                        openDoorTimer = setTimeout(() =>  gpio.write(OUTPUT_PIN, false), OPEN_LOCK_DELAY)
                     } else {
-                        openDoorTimer = setTimeout(gpio.destroy, OPEN_LOCK_DELAY);
+                        openDoorTimer = setTimeout(() =>  gpio.write(OUTPUT_PIN, false), OPEN_LOCK_DELAY)
                     }
                 }
             });
