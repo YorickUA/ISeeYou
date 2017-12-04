@@ -49,4 +49,13 @@ sudo npm install --unsafe-perm
 ```
 sudo node index
 ```
-in raspberry folder to start monitoring. The output goes from PIN 16 (GPIO 23)
+in raspberry folder to start monitoring. The output goes from PIN 16 (GPIO 23).
+
+How to get video stream from pi:
+1. Start monitoring on raspberry pi.
+2. Add the device address (and port) in app/config.js on your pc to receive stream from this device.
+3. On pc, run 
+```
+node index
+```
+4. Go to http://localhost:3000/socket.
