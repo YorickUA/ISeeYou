@@ -7,12 +7,11 @@ var cv = require('opencv'),
     OUTPUT_PIN = 16,
     FACE_MATCH_THRESHOLD = 80,
     OPEN_LOCK_DELAY = 10000,
-    DEFAULT_LOOP_DELAY = 400,
+    DEFAULT_LOOP_DELAY = 1000/24,
     CAM_HEIGHT = 320,
     CAM_WIDTH  = 240,
     openDoorTimer,
     camera,
-    scanLoop,
     comparing = false,
     counter = 0;
 
@@ -43,7 +42,7 @@ app.post('/open', (req, res) => {
     res.end();
 });
 
-startScan();
+scanner()
 
 function scanner(){
     camera.read((err, im) => {
@@ -94,21 +93,21 @@ function scanner(){
                             if (data) {
                                 openDoor();
                             }
+
                             comparing = false;
                         })
                         .catch(err => {
+
                             comparing = false;
                             console.log(err)
                         })
                 }
+
             })
         }
+        setTimeout(scanner, DEFAULT_LOOP_DELAY);
         io.emit('frame', { buffer: im.toBuffer() });
     });
-}
-
-function startScan(){
-    scanLoop = setInterval(scanner, DEFAULT_LOOP_DELAY);
 }
 
 function openDoor(){
