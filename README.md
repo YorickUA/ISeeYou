@@ -33,7 +33,7 @@ Steps:
 1. Install nodejs (tested on v6.11.4 and v9.2.0)
 2. Install and compile opencv https://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html#linux-installation. Consider the increasing of swap size to speed up compilation. (Might take a lot of time)
 3. In /etc/ld.so.conf.d/opencv.conf add the path to lib folder in compiled opencv folder.
-4. Install aws-cli and set up aws keys by running (on root is preferable)
+4. Install aws-cli and set up aws keys by running (as root user)
 ```
 aws configure
 ```
@@ -41,7 +41,7 @@ aws configure
 ```
 sudo npm install
 ```
-Migth be a permission issue with opencv, if this happens run
+Might be a permission issue with opencv, if this happens run
 ```
 sudo npm install --unsafe-perm
 ```
