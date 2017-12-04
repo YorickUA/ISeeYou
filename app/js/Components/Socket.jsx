@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import config from '../../config.js'
 import openSocket from 'socket.io-client';
 
 
@@ -10,7 +11,7 @@ class Socket extends React.Component {
     }
 
     componentDidMount(){
-        var socket = openSocket('http://localhost:3003');
+        var socket = openSocket(config.address); //192.168.0.143:3003 localhost:3003
 
         socket.on('frame', (data) => {
             var uint8Arr = new Uint8Array(data.buffer);
@@ -22,7 +23,7 @@ class Socket extends React.Component {
     }
 
     open() {
-        axios.post('http://localhost:3003/open');
+        axios.post(config.address + '/open');//192.168.0.143:3003/open ('http://localhost:3003/open')
     }
     render() {
         return (
