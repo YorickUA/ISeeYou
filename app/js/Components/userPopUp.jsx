@@ -4,9 +4,6 @@
 import React from 'react';
 import axios from 'axios';
 
-/**
- * Money transfer popup
- */
 class UserPopUp extends React.Component {
     constructor(){
         super();

@@ -1,15 +1,19 @@
 var cv = require('opencv'),
     AWS = require('aws-sdk'),
     gpio = require('rpi-gpio'),
+    app = require('express')(),
+    http = require('http').Server(app),
+    io = require('socket.io')(http),
     OUTPUT_PIN = 16,
     FACE_MATCH_THRESHOLD = 80,
     OPEN_LOCK_DELAY = 10000,
-    DEFAULT_LOOP_DELAY = 1000,
+    DEFAULT_LOOP_DELAY = 400,
     CAM_HEIGHT = 320,
     CAM_WIDTH  = 240,
     openDoorTimer,
     camera,
     scanLoop,
+    comparing = false,
     counter = 0;
 
 AWS.config.update({region:'eu-west-1'});
@@ -23,64 +27,83 @@ camera = new cv.VideoCapture(0);
 camera.setWidth(CAM_WIDTH);
 camera.setHeight(CAM_HEIGHT);
 
+app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, OPTIONS');
+    next();
+});
+
+http.listen(3003, function(){
+    console.log('listening on *:3003');
+});
+
+app.post('/open', (req, res) => {
+    openDoor();
+    res.end();
+});
+
 startScan();
 
 function scanner(){
-    camera.read(function(err, im) {
-        console.log("scan");
+    camera.read((err, im) => {
+       // console.log("scan");
         if (err) throw err;
-        im.detectObject('./node_modules/opencv/data/haarcascade_frontalface_alt2.xml', {}, function(err, faces) {
-            var params;
-            if (err) {
-                throw err
-            }
-            if (faces.length){
-              clearInterval(scanLoop);
-            }
-            for (var i = 0; i < faces.length; i++) {
-                counter++;
-                console.log("got face ", counter);
-                params = {
-                    CollectionId: 'employees',
-                    Image: {
-                        Bytes: im.toBuffer()
-                    },
-                    FaceMatchThreshold: FACE_MATCH_THRESHOLD,
-                    MaxFaces: 1
-                };
-                face = faces[i];
+        if (!comparing) {
+            im.detectObject('./node_modules/opencv/data/haarcascade_frontalface_alt2.xml', {}, (err, faces) => {
+                var params;
+                if (err) {
+                    throw err
+                }
 
-                rekognition.searchFacesByImage(params).promise()
-                    .then(data =>{
-                        var params;
-                        if (data.FaceMatches.length) {
-                            params = {
-                                Key: {
-                                    "FaceId": {
-                                        S: data.FaceMatches[0].Face.FaceId
-                                    }
-                                },
-                                TableName: "Employees"
-                            };
+                for (var i = 0; i < faces.length; i++) {
+                    comparing = true;
+                    counter++;
+                    console.log("got face ", counter);
+                    params = {
+                        CollectionId: 'employees',
+                        Image: {
+                            Bytes: im.toBuffer()
+                        },
+                        FaceMatchThreshold: FACE_MATCH_THRESHOLD,
+                        MaxFaces: 1
+                    };
+                    face = faces[i];
 
-                            return dynamodb.getItem(params).promise()
-                        } else {
-                            return false
-                        }
-                    })
-                    .then(data =>{
-                        console.log(data);
-                        if(data){
-                            openDoor();
-                        }
-                        startScan();
-                    })
-                    .catch(err => {
-                        startScan();
-                        console.log(err)
-                    })
-            }
-        });
+                    rekognition.searchFacesByImage(params).promise()
+                        .then(data => {
+                            var params;
+                            if (data.FaceMatches.length) {
+                                params = {
+                                    Key: {
+                                        "FaceId": {
+                                            S: data.FaceMatches[0].Face.FaceId
+                                        }
+                                    },
+                                    TableName: "Employees"
+                                };
+
+                                return dynamodb.getItem(params).promise()
+                            } else {
+                                return false
+                            }
+                        })
+                        .then(data => {
+                            console.log(data);
+
+                            if (data) {
+                                openDoor();
+                            }
+                            comparing = false;
+                        })
+                        .catch(err => {
+                            comparing = false;
+                            console.log(err)
+                        })
+                }
+            })
+        }
+        io.emit('frame', { buffer: im.toBuffer() });
     });
 }
 
@@ -89,11 +112,11 @@ function startScan(){
 }
 
 function openDoor(){
-    gpio.setup(OUTPUT_PIN, gpio.DIR_OUT, function(err) {
+    gpio.setup(OUTPUT_PIN, gpio.DIR_OUT, err => {
         if (err) {
             console.log(err);
         } else {
-            gpio.write(OUTPUT_PIN, true, function(err) {
+            gpio.write(OUTPUT_PIN, true, err => {
                 if (err){
                     console.log(err);
                 } else {
