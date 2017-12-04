@@ -6,9 +6,7 @@ import Webcam from 'webcamjs/webcam.js';
 import axios from 'axios';
 require('tracking');
 require('tracking/build/data/face');
-/**
- * Money transfer popup
- */
+
 class Screen extends React.Component {
     constructor(){
         super();
@@ -40,7 +38,7 @@ class Screen extends React.Component {
         this.tracker.setEdgesDensity(0.1);
         tracking.track('#video', this.tracker, { camera: true });
 
-        console.log('mounted')
+        console.log('mounted');
 
         this.tracker.on('track', (event) => {
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -77,7 +75,7 @@ class Screen extends React.Component {
                     if (result.data.Item){
                         this.setState({user:{
                             name:result.data.Item.Name['S'],
-                            FaceId:result.data.Item.FaceId['S'],
+                            FaceId:result.data.Item.FaceId['S']
                             },
                             scanTime: performance.now() - t0
                         })
