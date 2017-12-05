@@ -13,6 +13,13 @@ AWS.config.setPromisesDependency(null);
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(express.static(path.join(__dirname, './')));
 
+app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, OPTIONS');
+    next();
+});
+
 routes.forEach(function(route) {
     require(route)(app);
 });
