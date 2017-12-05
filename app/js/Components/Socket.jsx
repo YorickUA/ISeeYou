@@ -11,7 +11,7 @@ class Socket extends React.Component {
     }
 
     componentDidMount(){
-        var socket = openSocket(config.address); //192.168.0.143:3003 localhost:3003
+        var socket = openSocket(config.address,  {transports:['polling'], upgrade: true});
 
         socket.on('frame', (data) => {
             var uint8Arr = new Uint8Array(data.buffer);
@@ -23,7 +23,7 @@ class Socket extends React.Component {
     }
 
     open() {
-        axios.post(config.address + '/open');//192.168.0.143:3003/open ('http://localhost:3003/open')
+        axios.post(config.address + '/open');
     }
     render() {
         return (
