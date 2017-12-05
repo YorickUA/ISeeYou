@@ -58,4 +58,4 @@ How to get video stream from pi:
 ```
 node index
 ```
-4. Go to http://localhost:3000/socket.
+4. Go to http://localhost:3000/Dashboard.

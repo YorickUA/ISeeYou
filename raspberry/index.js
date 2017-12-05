@@ -4,17 +4,16 @@ var cv = require('opencv'),
     app = require('express')(),
     http = require('http').Server(app),
     io = require('socket.io')(http),
-    OUTPUT_PIN = 16,
+    config = require('./raspConfig.js'),
     FACE_MATCH_THRESHOLD = 80,
-    OPEN_LOCK_DELAY = 10000,
-    DEFAULT_LOOP_DELAY = 1000/2,
-    VIDEO_DELAY = 1000/24,
+    SCAN_DELAY = 1000/config.scanRate,
+    VIDEO_DELAY = 1000/config.frameRate,
     CAM_HEIGHT = 320,
     CAM_WIDTH  = 240,
     openDoorTimer,
     camera,
-    checkImage,
-    counter = 0;
+    checkImage;
+
 
 AWS.config.update({region:'eu-west-1'});
 AWS.config.setPromisesDependency(null);
@@ -26,8 +25,6 @@ rekognition = new AWS.Rekognition();
 camera = new cv.VideoCapture(0);
 camera.setWidth(CAM_WIDTH);
 camera.setHeight(CAM_HEIGHT);
-
-
 
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -51,7 +48,6 @@ broadcastVideo();
 
 function scanner(){
     if (checkImage) {
-        console.log("scan");
         checkImage.detectObject('./node_modules/opencv/data/haarcascade_frontalface_alt2.xml', {}, (err, faces) => {
             var params;
             if (err) {
@@ -59,9 +55,7 @@ function scanner(){
             }
 
            if (faces.length) {
-                comparing = true;
-                counter++;
-                console.log("got face ", counter);
+                console.log("got face");
                 params = {
                     CollectionId: 'employees',
                     Image: {
@@ -94,22 +88,22 @@ function scanner(){
                         console.log(data);
 
                         if (data) {
-                            //     openDoor();
+                            openDoor();
                         }
                         checkImage = "";
-                        setTimeout(scanner,DEFAULT_LOOP_DELAY);
+                        setTimeout(scanner,SCAN_DELAY);
                     })
                     .catch(err => {
                         checkImage = "";
-                        setTimeout(scanner,DEFAULT_LOOP_DELAY);
+                        setTimeout(scanner,SCAN_DELAY);
                         console.log(err)
                     })
             } else {
-               setTimeout(scanner,DEFAULT_LOOP_DELAY);
+               setTimeout(scanner,SCAN_DELAY);
            }
         })
     } else {
-        setTimeout(scanner,DEFAULT_LOOP_DELAY);
+        setTimeout(scanner,SCAN_DELAY);
     }
 }
 
@@ -124,20 +118,20 @@ function broadcastVideo(){
 
 
 function openDoor(){
-    gpio.setup(OUTPUT_PIN, gpio.DIR_OUT, err => {
+    gpio.setup(config.outputPin, gpio.DIR_OUT, err => {
         if (err) {
             console.log(err);
         } else {
-            gpio.write(OUTPUT_PIN, true, err => {
+            gpio.write(config.outputPin, true, err => {
                 if (err){
                     console.log(err);
                 } else {
                     console.log('Written to pin');
                     if (openDoorTimer){
                         clearTimeout(openDoorTimer);
-                        openDoorTimer = setTimeout(() =>  gpio.write(OUTPUT_PIN, false), OPEN_LOCK_DELAY)
+                        openDoorTimer = setTimeout(() =>  gpio.write(config.outputPin, false), config.openLockDelay)
                     } else {
-                        openDoorTimer = setTimeout(() =>  gpio.write(OUTPUT_PIN, false), OPEN_LOCK_DELAY)
+                        openDoorTimer = setTimeout(() =>  gpio.write(config.outputPin, false), config.openLockDelay)
                     }
                 }
             });

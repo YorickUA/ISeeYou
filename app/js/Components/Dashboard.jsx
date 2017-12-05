@@ -4,7 +4,7 @@ import config from '../../config.js'
 import openSocket from 'socket.io-client';
 
 
-class Socket extends React.Component {
+class Dasboard extends React.Component {
     constructor(){
         super();
         this.state = {image: ""}
@@ -35,4 +35,4 @@ class Socket extends React.Component {
     }
 }
 
-export default Socket;
+export default Dasboard;
