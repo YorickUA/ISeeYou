@@ -3,13 +3,18 @@ import axios from 'axios';
 import config from '../../config.js'
 import openSocket from 'socket.io-client';
 
-
-class Dasboard extends React.Component {
+/**
+ * Dashboard class for video stream and door opening
+ */
+class Dashboard extends React.Component {
     constructor(){
         super();
         this.state = {image: ""}
     }
 
+    /**
+     * Start receiving video stream
+     */
     componentDidMount(){
         var socket = openSocket(config.address,  {transports:['polling'], upgrade: true});
 
@@ -22,9 +27,13 @@ class Dasboard extends React.Component {
         });
     }
 
-    open() {
+    /**
+     * Open the door
+     */
+    static open() {
         axios.post(config.address + '/open');
     }
+
     render() {
         return (
             <div>
@@ -35,4 +44,4 @@ class Dasboard extends React.Component {
     }
 }
 
-export default Dasboard;
+export default Dashboard;

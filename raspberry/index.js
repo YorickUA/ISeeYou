@@ -18,6 +18,7 @@ var cv = require('opencv'),
 AWS.config.update({region:'eu-west-1'});
 AWS.config.setPromisesDependency(null);
 
+// initialize AWS services
 dynamodb = new AWS.DynamoDB();
 rekognition = new AWS.Rekognition();
 
@@ -26,17 +27,21 @@ camera = new cv.VideoCapture(0);
 camera.setWidth(CAM_WIDTH);
 camera.setHeight(CAM_HEIGHT);
 
+/**
+ * Allow cross-origin request
+ */
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, OPTIONS');
     next();
 });
 
-http.listen(3003, function(){
-    console.log('listening on *:3003');
+http.listen(config.port, function(){
+    console.log('listening on *:' + config.port);
 });
 
+/**
+ * Route for door opening
+ */
 app.post('/open', (req, res) => {
     openDoor();
     res.end();
@@ -46,6 +51,10 @@ scanner();
 
 broadcastVideo();
 
+/**
+ * Function detects face on image and performs face recognition
+ * Note: this function can be run ONLY ONCE AT A TIME
+ */
 function scanner(){
     if (checkImage) {
         checkImage.detectObject('./node_modules/opencv/data/haarcascade_frontalface_alt2.xml', {}, (err, faces) => {
@@ -64,41 +73,9 @@ function scanner(){
                     FaceMatchThreshold: FACE_MATCH_THRESHOLD,
                     MaxFaces: 1
                 };
-                face = faces[0];
-
-                rekognition.searchFacesByImage(params).promise()
-                    .then(data => {
-                        var params;
-                        if (data.FaceMatches.length) {
-                            params = {
-                                Key: {
-                                    "FaceId": {
-                                        S: data.FaceMatches[0].Face.FaceId
-                                    }
-                                },
-                                TableName: "Employees"
-                            };
-
-                            return dynamodb.getItem(params).promise()
-                        } else {
-                            return false
-                        }
-                    })
-                    .then(data => {
-                        console.log(data);
-
-                        if (data) {
-                            openDoor();
-                        }
-                        checkImage = "";
-                        setTimeout(scanner,SCAN_DELAY);
-                    })
-                    .catch(err => {
-                        checkImage = "";
-                        setTimeout(scanner,SCAN_DELAY);
-                        console.log(err)
-                    })
-            } else {
+               recognize(params);
+           } else {
+               checkImage = "";
                setTimeout(scanner,SCAN_DELAY);
            }
         })
@@ -107,6 +84,9 @@ function scanner(){
     }
 }
 
+/**
+ * Function for image broadcasting to the client
+ */
 function broadcastVideo(){
     camera.read((err, im) => {
         if (err) throw err;
@@ -116,7 +96,9 @@ function broadcastVideo(){
     })
 }
 
-
+/**
+ * Open door function
+ */
 function openDoor(){
     gpio.setup(config.outputPin, gpio.DIR_OUT, err => {
         if (err) {
@@ -137,4 +119,43 @@ function openDoor(){
             });
         }
     })
+}
+
+/**
+ * Recognize face and open the door
+ * @param params Object parameters for AWS Rekognition
+ */
+function recognize(params){
+    rekognition.searchFacesByImage(params).promise()
+        .then(data => {
+            var params;
+            if (data.FaceMatches.length) {
+                params = {
+                    Key: {
+                        "FaceId": {
+                            S: data.FaceMatches[0].Face.FaceId
+                        }
+                    },
+                    TableName: "Employees"
+                };
+
+                return dynamodb.getItem(params).promise()
+            } else {
+                return false
+            }
+        })
+        .then(data => {
+            console.log(data);
+
+            if (data) {
+                openDoor();
+            }
+            checkImage = "";
+            setTimeout(scanner,SCAN_DELAY);
+        })
+        .catch(err => {
+            checkImage = "";
+            setTimeout(scanner,SCAN_DELAY);
+            console.log(err)
+        })
 }

@@ -4,6 +4,9 @@
 import React from 'react';
 import axios from 'axios';
 
+/**
+ * New user popup
+ */
 class UserPopUp extends React.Component {
     constructor(){
         super();
@@ -13,7 +16,10 @@ class UserPopUp extends React.Component {
         }
     }
 
-
+    /**
+     * Upload file to state
+     * @param e Object event
+     */
     setFile(e) {
         var file = e.target.files[0];
         this.setState({image:file})
@@ -27,7 +33,9 @@ class UserPopUp extends React.Component {
 
     }
 
-
+    /**
+     * Send user info to server
+     */
     sendData(){
         if(this.state.image && this.state.name) {
             var formData = new FormData();
