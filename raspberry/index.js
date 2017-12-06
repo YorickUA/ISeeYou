@@ -5,11 +5,8 @@ var cv = require('opencv'),
     http = require('http').Server(app),
     io = require('socket.io')(http),
     config = require('./raspConfig.js'),
-    FACE_MATCH_THRESHOLD = 80,
     SCAN_DELAY = 1000/config.scanRate,
     VIDEO_DELAY = 1000/config.frameRate,
-    CAM_HEIGHT = 320,
-    CAM_WIDTH  = 240,
     openDoorTimer,
     camera,
     checkImage;
@@ -23,9 +20,9 @@ dynamodb = new AWS.DynamoDB();
 rekognition = new AWS.Rekognition();
 
 // initialize stream camera
-camera = new cv.VideoCapture(0);
-camera.setWidth(CAM_WIDTH);
-camera.setHeight(CAM_HEIGHT);
+camera = new cv.VideoCapture(config.videoSource);
+camera.setWidth(config.camWidth);
+camera.setHeight(config.camHeight);
 
 /**
  * Allow cross-origin request
@@ -70,7 +67,7 @@ function scanner(){
                     Image: {
                         Bytes: checkImage.toBuffer()
                     },
-                    FaceMatchThreshold: FACE_MATCH_THRESHOLD,
+                    FaceMatchThreshold: config.faceMatchThreshold,
                     MaxFaces: 1
                 };
                recognize(params);
