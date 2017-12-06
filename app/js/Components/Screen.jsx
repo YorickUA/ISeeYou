@@ -19,7 +19,9 @@ class Screen extends React.Component {
         }
     }
 
-
+    /**
+     * Start tracking faces
+     */
     componentDidMount(){
         var context;
 
@@ -45,25 +47,21 @@ class Screen extends React.Component {
             if (event.data.length === 0){
                 return;
             } else {
-                // if( !this.wait ) {
-                //     setTimeout(this.takeSnap.bind(this), 500);
-                //     this.wait = true;
-                // }
                 this.wait = true;
-                //this.takeSnap();
                 event.data.forEach(function(rect) {
                     context.strokeStyle = '#a64ceb';
                     context.strokeRect(rect.x, rect.y, rect.width, rect.height);
                     context.font = '11px Helvetica';
                     context.fillStyle = "#fff";
-                    // context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
-                    // context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
                 });
             }
 
         });
     };
 
+    /**
+     * Take a snap shot and perform comparison
+     */
     takeSnap(){
         Webcam.snap( data_uri => {
             var t0;

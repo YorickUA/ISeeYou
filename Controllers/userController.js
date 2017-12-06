@@ -32,7 +32,10 @@ module.exports = app => {
     app.use('/', router);
 };
 
-router.post('/employee', upload.single('file'), (req, res) =>{
+/**
+ * Create new user
+ */
+router.post('/employee', upload.single('file'), (req, res) => {
     var name = req.body.name,
         imageName;
 
@@ -46,12 +49,12 @@ router.post('/employee', upload.single('file'), (req, res) =>{
                     Image: {
                         S3Object: {
                             Bucket: 'elifemployees-1',
-                            Name: imageName,
+                            Name: imageName
                         }
                     },
                     DetectionAttributes: [
                         "DEFAULT"
-                    ],
+                    ]
                 };
                 return rekognition.indexFaces(params).promise()
             })
@@ -63,7 +66,7 @@ router.post('/employee', upload.single('file'), (req, res) =>{
                         },
                         "Name": {
                             S: name
-                        },
+                        }
                     },
                     TableName: "Employees"
                 };
@@ -77,8 +80,12 @@ router.post('/employee', upload.single('file'), (req, res) =>{
                 res.status(500)
             })
     })
-})
+});
 
+
+/**
+ * Delete user
+ */
 router.delete('/employee/:id', (req, res) => {
     var id = req.params.id;
 
@@ -94,7 +101,7 @@ router.delete('/employee/:id', (req, res) => {
                 Key: {
                     "FaceId": {
                         S: id
-                    },
+                    }
                 },
                 TableName: "Employees"
             };
@@ -106,8 +113,12 @@ router.delete('/employee/:id', (req, res) => {
             console.log(err);
             res.status(500)
         })
-})
+});
 
+
+/**
+ * Compare image with images in collection
+ */
 router.post('/compareUsers', (req, res) =>{
     var image = req.body.image,
         buffer;
@@ -143,13 +154,16 @@ router.post('/compareUsers', (req, res) =>{
         })
         .then(data => res.send(data))
         .catch(err => console.log(err))
-})
+});
 
+/**
+ * Get all users
+ */
 router.get('/employee', (req, res) =>{
     var params = {
         TableName: "Employees"
-    }
+    };
     dynamodb.scan(params).promise()
         .then( data  => res.send(data))
         .catch(console.log)
-})
+});

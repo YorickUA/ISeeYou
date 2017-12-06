@@ -1,13 +1,19 @@
 import React from 'react';
 import axios from 'axios';
 
-
+/**
+ * User component
+ */
 class UserComponent extends React.Component {
     constructor() {
         super();
     }
 
-    delete(id){
+    /**
+     * Delete user
+     * @param id String user id
+     */
+    deleteEmployee(id){
         axios.delete(window.location.origin + '/employee/' + id)
             .then((result) => {
                 if(result.status===200){
@@ -25,7 +31,7 @@ class UserComponent extends React.Component {
                   {this.props.users.map( (user, index) =>
                       <li key={index}>
                           <div style={{width:100, display:'inline-block'}}>{user.name}</div>
-                          <button onClick={this.delete.bind(this, user.FaceId)}>Delete</button>
+                          <button onClick={this.deleteEmployee.bind(this, user.FaceId)}>Delete</button>
                       </li>)
                   }
               </ul>
