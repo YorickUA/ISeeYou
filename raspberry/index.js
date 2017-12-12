@@ -10,6 +10,7 @@ var cv = require('opencv'),
     SCAN_DELAY = 1000/config.scanRate,
     VIDEO_DELAY = 1000/config.frameRate,
     openDoorTimer,
+    greetingBlocker = true,
     camera,
     checkImage;
 
@@ -160,14 +161,22 @@ function recognize(params){
         })
 }
 
+/**
+ * Output greeting to speakers
+ * @param person String person name
+ */
 function playGreeting(person){
-    exec('echo “Доброго дня,' + person +'” | RHVoice-test -p Anatol -o greeting.mp3',(err)=>{
-        if (err instanceof Error)
-            throw err;
+    if (greetingBlocker) {
+        exec('echo “Доброго дня,' + person + '” | RHVoice-test -p Anatol -o greeting.mp3', (err)=> {
+            if (err instanceof Error)
+                throw err;
 
-        player.play('greeting.mp3', function(err){
-            if (err) throw err
-        })
+            player.play('greeting.mp3', function (err) {
+                if (err) throw err
+            });
 
-    });
+            greetingBlocker = false;
+            setTimeout(() => greetingBlocker = true, config.greetingDelay)
+        });
+    }
 }
