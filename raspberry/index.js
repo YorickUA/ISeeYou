@@ -149,7 +149,7 @@ function recognize(params){
 
             if (data) {
                 playGreeting(data.Item.Name.S);
-             //   openDoor();
+                openDoor();
             }
             checkImage = "";
             setTimeout(scanner,SCAN_DELAY);
