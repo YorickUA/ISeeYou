@@ -149,7 +149,7 @@ function recognize(params){
 
             if (data) {
                 playGreeting(data.Item.Name.S);
-                openDoor();
+             //   openDoor();
             }
             checkImage = "";
             setTimeout(scanner,SCAN_DELAY);
@@ -167,7 +167,7 @@ function recognize(params){
  */
 function playGreeting(person){
     if (greetingBlocker) {
-        exec('echo “Доброго дня,' + person + '” | RHVoice-test -p Anatol -o greeting.mp3', (err)=> {
+        exec('echo “' + config.greetingPhrase +',' + person + '” | RHVoice-test -p Anatol -o greeting.mp3', (err)=> {
             if (err instanceof Error)
                 throw err;
 

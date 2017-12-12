@@ -9,5 +9,6 @@ module.exports = {
     faceMatchThreshold: 80,
     camHeight: 320,
     camWidth: 240,
-    greetingDelay: 10000
+    greetingDelay: 10000,
+    greetingPhrase: "Доброго дня"
 };
