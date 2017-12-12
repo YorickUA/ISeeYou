@@ -29,25 +29,40 @@ How to use:
 2. Push the scan button when camera facing person you want to check against database images.
 
 ## Installation on raspberry pi
+All steps should be done under root user.
 Steps:
 1. Install nodejs (tested on v6.11.4 and v9.2.0)
 2. Install and compile opencv https://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html#linux-installation. Consider the increasing of swap size to speed up compilation. (Might take a lot of time)
 3. In /etc/ld.so.conf.d/opencv.conf add the path to lib folder in compiled opencv folder.
-4. Install aws-cli and set up aws keys by running (as root user)
+4. Install aws-cli and set up aws keys by running
 ```
 aws configure
 ```
-4. In raspberry folder of this repository run
+5. Clone RHVoice from https://github.com/Olga-Yakovleva/RHVoice
+6. Run in RHVoice folder
 ```
-sudo npm install
+apt-get update &&\
+apt-get install -y\
+    python3-pip\
+    gcc\
+    scons\
+    libao4\
+    locales\
+    libao-dev\
+    supervisor\
+    pkg-config
 ```
-Might be a permission issue with opencv, if this happens run
+7. Install omxplayer
 ```
-sudo npm install --unsafe-perm
+apt-get install omxplayer
 ```
-5. Run
+8. In raspberry folder of this repository run
 ```
-sudo node index
+npm install --unsafe-perm
+```
+9. Run
+```
+node index
 ```
 in raspberry folder to start monitoring. The output goes from PIN 16 (GPIO 23).
 

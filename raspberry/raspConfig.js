@@ -8,5 +8,7 @@ module.exports = {
     videoSource: 0,
     faceMatchThreshold: 80,
     camHeight: 320,
-    camWidth: 240
+    camWidth: 240,
+    greetingDelay: 10000,
+    greetingPhrase: "Доброго дня"
 };

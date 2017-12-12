@@ -13,6 +13,7 @@
     "express": "^4.16.2",
     "opencv": "^6.0.0",
     "rpi-gpio": "^0.9.1",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "play-sound": "^1.1.1"
   }
 }

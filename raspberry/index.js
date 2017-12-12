@@ -5,9 +5,12 @@ var cv = require('opencv'),
     http = require('http').Server(app),
     io = require('socket.io')(http),
     config = require('./raspConfig.js'),
+    player = require('play-sound')(opts = {}),
+    { exec } = require('child_process'),
     SCAN_DELAY = 1000/config.scanRate,
     VIDEO_DELAY = 1000/config.frameRate,
     openDoorTimer,
+    greetingBlocker = true,
     camera,
     checkImage;
 
@@ -145,7 +148,8 @@ function recognize(params){
             console.log(data);
 
             if (data) {
-                openDoor();
+                playGreeting(data.Item.Name.S);
+             //   openDoor();
             }
             checkImage = "";
             setTimeout(scanner,SCAN_DELAY);
@@ -155,4 +159,24 @@ function recognize(params){
             setTimeout(scanner,SCAN_DELAY);
             console.log(err)
         })
+}
+
+/**
+ * Output greeting to speakers
+ * @param person String person name
+ */
+function playGreeting(person){
+    if (greetingBlocker) {
+        exec('echo “' + config.greetingPhrase +',' + person + '” | RHVoice-test -p Anatol -o greeting.mp3', (err)=> {
+            if (err instanceof Error)
+                throw err;
+
+            player.play('greeting.mp3', function (err) {
+                if (err) throw err
+            });
+
+            greetingBlocker = false;
+            setTimeout(() => greetingBlocker = true, config.greetingDelay)
+        });
+    }
 }
