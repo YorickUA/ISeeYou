@@ -39,7 +39,7 @@ Steps:
 aws configure
 ```
 5. Clone RHVoice from https://github.com/Olga-Yakovleva/RHVoice
-6. Run in RHVoice folder
+6. Run
 ```
 apt-get update &&\
 apt-get install -y\
@@ -52,15 +52,19 @@ apt-get install -y\
     supervisor\
     pkg-config
 ```
-7. Install omxplayer
+7. Run in RHVoice folder
+```
+scons && scons install && ldconfig
+```
+8. Install omxplayer
 ```
 apt-get install omxplayer
 ```
-8. In raspberry folder of this repository run
+9. In raspberry folder of this repository run
 ```
 npm install --unsafe-perm
 ```
-9. Run
+10. Run
 ```
 node index
 ```
