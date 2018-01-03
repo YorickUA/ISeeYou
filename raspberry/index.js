@@ -21,6 +21,7 @@ AWS.config.setPromisesDependency(null);
 // initialize AWS services
 dynamodb = new AWS.DynamoDB();
 rekognition = new AWS.Rekognition();
+iot = new AWS.IotData({endpoint: "a172ulhf1fm9p3.iot.eu-west-1.amazonaws.com"});
 
 // initialize stream camera
 camera = new cv.VideoCapture(config.videoSource);
@@ -43,6 +44,7 @@ http.listen(config.port, function(){
  * Route for door opening
  */
 app.post('/open', (req, res) => {
+    console.log('open');
     openDoor();
     res.end();
 });
@@ -138,9 +140,32 @@ function recognize(params){
                     },
                     TableName: "Employees"
                 };
-
+                iot.updateThingShadow({
+                    thingName: "Recognizer",
+                    payload: JSON.stringify(
+                        {
+                            state:
+                            {
+                                reported: {
+                                    value: true
+                                }
+                            }
+                        })
+                }).promise();
                 return dynamodb.getItem(params).promise()
             } else {
+                iot.updateThingShadow({
+                    thingName: "Recognizer",
+                    payload: JSON.stringify(
+                        {
+                            state:
+                            {
+                                reported: {
+                                    value: false
+                                }
+                            }
+                        })
+                }).promise();
                 return false
             }
         })
@@ -149,7 +174,7 @@ function recognize(params){
 
             if (data) {
                 playGreeting(data.Item.Name.S);
-                openDoor();
+               // openDoor();
             }
             checkImage = "";
             setTimeout(scanner,SCAN_DELAY);

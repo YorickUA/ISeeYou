@@ -2,7 +2,7 @@ import boto3
 import cv2
 import time
 import sys
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
 #sudo modprobe bcm2835-v4l2
 
@@ -21,9 +21,9 @@ camera = cv2.VideoCapture(camera_port)
 detector = cv2.CascadeClassifier("face.xml")
 rekognition = boto3.client('rekognition')
 dynamodb = boto3.client('dynamodb')
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(relay_pin, GPIO.OUT)
-GPIO.output(relay_pin, True)
+#GPIO.setmode(GPIO.BOARD)
+#GPIO.setup(relay_pin, GPIO.OUT)
+#GPIO.output(relay_pin, True)
 
 
 # Detect face using Haar cascade classifier
@@ -51,10 +51,10 @@ def get_face_name(face_id):
 	return response['Item']['Name']['S']
 
 # Open door lock using Pi GPIO
-def open_door():
-	GPIO.output(relay_pin, False)
-	time.sleep(capture_delay)
-	GPIO.output(relay_pin, True)
+#def open_door():
+#	GPIO.output(relay_pin, False)
+#	time.sleep(capture_delay)
+#	GPIO.output(relay_pin, True)
 
 # Good stuff is below
 while True:
