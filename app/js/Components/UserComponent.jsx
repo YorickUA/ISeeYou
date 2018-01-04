@@ -26,15 +26,29 @@ class UserComponent extends React.Component {
     render() {
         return (
             <div className="userComponent">
-                <button onClick={this.props.newEmployee}>New employee</button>
-              <ul>
+              <button className="ui icon button green" onClick={this.props.newEmployee}><i class="add user icon"></i></button>
+              <table class="ui very basic celled table">
+                  <thead>
+                      <tr>
+                          <th>Name</th>
+                          <th>Delete</th>
+                      </tr>
+                  </thead>
+                  <tbody>
                   {this.props.users.map( (user, index) =>
-                      <li key={index}>
-                          <div style={{width:100, display:'inline-block'}}>{user.name}</div>
-                          <button onClick={this.deleteEmployee.bind(this, user.FaceId)}>Delete</button>
-                      </li>)
+                      <tr key={index}>
+                          <td>
+                              <i class="user icon"></i>
+                              <div style={{width:100, display:'inline-block'}}>{user.name}</div>
+                          </td>
+                          <td>
+                              <button className="ui icon button red" onClick={this.deleteEmployee.bind(this, user.FaceId)}><i class="remove icon"></i></button>
+                          </td>
+                      </tr>
+                      )
                   }
-              </ul>
+                  </tbody>
+              </table>
 
             </div>
         );

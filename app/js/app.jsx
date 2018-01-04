@@ -51,7 +51,9 @@ class App extends React.Component {
     
     render() {
         return (
-            <div>
+            <div className="container">
+                <h1 className="ui header center aligned">ISeeYou - face recognition app</h1>
+                <div class="ui divider"></div>
                 <Screen/>
                 <UserComponent newEmployee = {this.newEmployee.bind(this)} users={this.state.users} refresh={this.refresh.bind(this)}/>
                 {this.state.newEmployeePopUp && <UserPopUp close={this.newEmployee.bind(this)} refresh={this.refresh.bind(this)}/>}

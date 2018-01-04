@@ -92,17 +92,24 @@ class Screen extends React.Component {
     render() {
         return (
             <div>
-                <div id="screen">
-                    <video id="video" width="320" height="240" preload="true" autoPlay loop muted/>
-                    <canvas id="canvas" width="320" height="240"/>
+                <div className="image_block">
+                    <div className="ui header center aligned"> Video </div>
+                    <div className="screen">
+                        <video id="video" width="320" height="240" preload="true" autoPlay loop muted/>
+                        <canvas id="canvas" width="320" height="240"/>
+                    </div>
                 </div>
-                <div id="results"></div>
+                <div className="image_block">
+                    <div className="ui header center aligned"> Snapshot </div>
+                    <div id="results"></div>
+                </div>
+
                <div>
-                   <button onClick={this.takeSnap.bind(this)}>Scan</button>
+                   <button className="ui button blue" onClick={this.takeSnap.bind(this)}>Scan</button>
                </div>
                 { this.state.user &&
                 <h3>
-                    This is : {this.state.user.name||'unknown'}, scan time: {(this.state.scanTime)} milliseconds
+                    This is : {this.state.user.name||'unknown'}, scan time: {(this.state.scanTime.toFixed(0))} milliseconds
                 </h3>
                 }
 

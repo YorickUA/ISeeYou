@@ -12,6 +12,7 @@ class UserPopUp extends React.Component {
         super();
         this.state = {
             image: null,
+            imageName: "Select file",
             name:""
         }
     }
@@ -22,7 +23,7 @@ class UserPopUp extends React.Component {
      */
     setFile(e) {
         var file = e.target.files[0];
-        this.setState({image:file})
+        this.setState({image:file, imageName: e.target.files[0].name})
     };
 
     inputHandler(state, e) {
@@ -58,13 +59,30 @@ class UserPopUp extends React.Component {
         return (
             <div className="overlay">
                 <div className="popUp">
-                    <lable> Name:
-                        <input type="text" value={this.state.name} onChange = {this.inputHandler.bind(this, "name")}/>
-                    </lable>
+                    <h2>Add new employee</h2>
+                    <div class="ui divider"></div>
+                    <label> Name:
+                        <div className="ui fluid input">
+                            <input type="text" value={this.state.name} onChange = {this.inputHandler.bind(this, "name")}/>
+                        </div>
+                    </label>
 
-                    <input type="file" onChange={this.setFile.bind(this)}/>
-                    <button onClick={this.sendData.bind(this)}>Send</button>
-                    <button onClick={this.props.close}>Close</button>
+
+
+                    <div style={{paddingTop:10}}>
+                        <label htmlFor="file" className="ui icon button">
+                            <i className="file icon"></i>
+                            Open File</label>
+                        <input type="file" id="file" style={{display:"none"}} onChange={this.setFile.bind(this)}/>
+                        <span>{this.state.imageName}</span>
+                    </div>
+
+
+
+                    <div style={{marginTop:10}}>
+                        <button className="ui right floated button red" onClick={this.props.close}>Close</button>
+                        <button className="ui right floated button green" onClick={this.sendData.bind(this)}>Send</button>
+                    </div>
                 </div>
             </div>
         )
@@ -72,3 +90,7 @@ class UserPopUp extends React.Component {
 }
 
 export default UserPopUp;
+
+   /* <div style={{paddingTop:10}}>
+                <input type="file" onChange={this.setFile.bind(this)}/>
+            </div>*/
